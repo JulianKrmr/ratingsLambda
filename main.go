@@ -1,18 +1,26 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/JulianKrmr/ratingsLambda/api"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"log"
 )
 
-type Ratings struct {
-}
-
-func Handler(ctx context.Context, ratings Ratings) (string, error) {
-	return fmt.Sprintf("Hello World!"), nil
-}
-
 func main() {
-	lambda.Start(Handler)
+	app := fiber.New()
+	app.Use(cors.New())
+	app.Get("/", func(ctx *fiber.Ctx) error {
+		return ctx.JSON("Hello World")
+
+	})
+	app.Post("/ratings", func(ctx *fiber.Ctx) error {
+		return api.HandleRatings(ctx)
+	})
+
+	err := app.Listen(":8080")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
